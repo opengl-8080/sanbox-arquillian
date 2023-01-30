@@ -1,0 +1,22 @@
+plugins {
+    id "java"
+}
+
+sourceCompatibility = 8
+sourceCompatibility = 8
+
+[compileJava, compileTestJava]*.options*.encoding = "UTF-8"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation platform("org.jboss.arquillian:arquillian-bom:1.4.0.Final")
+    testImplementation "org.jboss.spec:jboss-javaee-7.0:1.0.3.Final"
+    testImplementation "junit:junit:4.13"
+    testImplementation "org.jboss.arquillian.junit:arquillian-junit-container"
+    testImplementation "org.jboss.arquillian.container:arquillian-weld-ee-embedded-1.1:1.0.0.CR9"
+    testImplementation "org.jboss.weld:weld-core:2.3.5.Final"
+    testImplementation "org.slf4j:slf4j-simple:1.6.4"
+}
