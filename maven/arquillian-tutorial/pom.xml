@@ -12,6 +12,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <wildfly.version>27.0.1.Final</wildfly.version>
   </properties>
 
   <dependencyManagement>
@@ -55,44 +56,37 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.22.2</version>
-      </plugin>
-
-      <plugin>
-        <groupId>org.wildfly.plugins</groupId>
-        <artifactId>wildfly-jar-maven-plugin</artifactId>
-        <version>8.1.0.Final</version>
         <configuration>
-          <feature-pack-location>wildfly@maven(org.jboss.universe:community-universe)#27.0.0.Final</feature-pack-location>
-<!--          <layers>-->
-<!--            <layer>jaxrs-server</layer>-->
-<!--            <layer>management</layer>-->
-<!--          </layers>-->
+          <systemPropertyVariables>
+            <jboss.home>${project.basedir}/target/wildfly-${wildfly.version}</jboss.home>
+            <module.path>${project.basedir}/target/wildfly-${wildfly.version}/modules</module.path>
+          </systemPropertyVariables>
         </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>package</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <version>3.0.0-M8</version>
-        <configuration>
-          <systemPropertyVariables>
-            <arquillian.launch>wildfly-bootable</arquillian.launch>
-            <bootable.jar>target/${project.artifactId}-${project.version}-bootable.jar</bootable.jar>
-          </systemPropertyVariables>
-        </configuration>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.5.0</version>
         <executions>
           <execution>
-            <id>integration-test</id>
+            <id>unpack</id>
+            <phase>process-test-classes</phase>
             <goals>
-              <goal>integration-test</goal>
+              <goal>unpack</goal>
             </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.wildfly</groupId>
+                  <artifactId>wildfly-dist</artifactId>
+                  <version>${wildfly.version}</version>
+                  <type>zip</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>target</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -140,7 +134,7 @@
     <!-- arquillian container -->
     <dependency>
       <groupId>org.wildfly.arquillian</groupId>
-      <artifactId>wildfly-arquillian-container-bootable</artifactId>
+      <artifactId>wildfly-arquillian-container-embedded</artifactId>
       <version>5.0.0.Alpha6</version>
       <scope>test</scope>
     </dependency>
